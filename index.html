@@ -291,8 +291,11 @@
                         </div>
 
                         <div class="flex-grow">
-                            <h3 class="text-3xl font-bold text-indigo-400">
+                            <h3 class="text-3xl font-bold text-indigo-400 flex justify-between items-center">
                                 5v5 - Smart Football Community Platform
+                                <a href="https://www.5v5games.com" target="_blank" class="text-sm font-normal text-slate-400 hover:text-indigo-300 transition duration-150 ml-4">
+                                    Visit Site &rarr;
+                                </a>
                             </h3>
                             <p class="text-sm font-medium text-slate-500 mb-4">Node.js Framework | Tech Partner & Architect</p>
                             
@@ -425,59 +428,6 @@
             </div>
 
             <script>
-                // Simple QR code generation using canvas
-                function generateQRCode(text, canvas) {
-                    const ctx = canvas.getContext('2d');
-                    const size = 200;
-                    canvas.width = size;
-                    canvas.height = size;
-                    
-                    // Simple pattern generation (basic QR-like appearance)
-                    const moduleSize = 10;
-                    const modules = size / moduleSize;
-                    
-                    // Clear canvas
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, size, size);
-                    
-                    // Generate pattern based on text hash
-                    ctx.fillStyle = '#000000';
-                    let hash = 0;
-                    for (let i = 0; i < text.length; i++) {
-                        hash = ((hash << 5) - hash + text.charCodeAt(i)) & 0xffffffff;
-                    }
-                    
-                    // Create QR-like pattern
-                    for (let x = 0; x < modules; x++) {
-                        for (let y = 0; y < modules; y++) {
-                            const seed = (x * modules + y + hash) % 1000;
-                            if (seed % 3 === 0 || (x < 3 && y < 3) || (x > modules-4 && y < 3) || (x < 3 && y > modules-4)) {
-                                ctx.fillRect(x * moduleSize, y * moduleSize, moduleSize, moduleSize);
-                            }
-                        }
-                    }
-                    
-                    // Add corner squares (QR code positioning markers)
-                    const cornerSize = moduleSize * 3;
-                    ctx.fillStyle = '#000000';
-                    // Top-left
-                    ctx.fillRect(0, 0, cornerSize, cornerSize);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(moduleSize, moduleSize, moduleSize, moduleSize);
-                    
-                    // Top-right
-                    ctx.fillStyle = '#000000';
-                    ctx.fillRect(size - cornerSize, 0, cornerSize, cornerSize);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(size - cornerSize + moduleSize, moduleSize, moduleSize, moduleSize);
-                    
-                    // Bottom-left
-                    ctx.fillStyle = '#000000';
-                    ctx.fillRect(0, size - cornerSize, cornerSize, cornerSize);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(moduleSize, size - cornerSize + moduleSize, moduleSize, moduleSize);
-                }
-                
                 function showQRCode() {
                     const modal = document.getElementById('qrModal');
                     const qrContainer = document.getElementById('qrcode');
@@ -485,11 +435,26 @@
                     // Clear previous QR code
                     qrContainer.innerHTML = '';
                     
-                    // Create canvas element
-                    const canvas = document.createElement('canvas');
-                    generateQRCode(window.location.href, canvas);
-                    qrContainer.appendChild(canvas);
+                    // Get the current page URL
+                    const currentUrl = window.location.href;
                     
+                    // Create QR code using QR Server API with better parameters
+                    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&format=png&ecc=M&data=${encodeURIComponent(currentUrl)}`;
+                    
+                    const img = document.createElement('img');
+                    img.src = qrCodeUrl;
+                    img.alt = 'QR Code for Profile';
+                    img.style.width = '200px';
+                    img.style.height = '200px';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    
+                    // Add error handling
+                    img.onerror = function() {
+                        qrContainer.innerHTML = '<div style="width: 200px; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 1px solid #ccc; color: #666;">QR Code Generation Failed</div>';
+                    };
+                    
+                    qrContainer.appendChild(img);
                     modal.classList.remove('hidden');
                 }
                 
